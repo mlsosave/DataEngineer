@@ -59,6 +59,8 @@ def transform(df, exchange_csv_path):
     # Ensure exchange_rate['GBP'] is always a float
     # gbp_rate = float(exchange_rate['GBP'])
     # df['MC_GBP_Billion'] = [np.round(x * gbp_rate, 2) for x in df['MC_USD_Billion']]
+
+    # dict = dataframe.set_index('Col_1_header').to_dict()['Col_2_header']
     
     log_progress('Initiating TRANSFORM process')
 
