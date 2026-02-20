@@ -55,12 +55,36 @@ def extract(url, table_attribs):
 
 # -------------------- Transformation --------------------
 def transform(df, exchange_csv_path):
+
+    # Ensure exchange_rate['GBP'] is always a float
+    # gbp_rate = float(exchange_rate['GBP'])
+    # df['MC_GBP_Billion'] = [np.round(x * gbp_rate, 2) for x in df['MC_USD_Billion']]
+    
     log_progress('Initiating TRANSFORM process')
 
     # Read CSV and convert to dictionary
     df_exchange = pd.read_csv(exchange_csv_path)
+    
+    """
+    zip(df_exchange['Currency'], df_exchange['Rate']) combina las dos columnas en pares: ("EUR", 0.93), ("GBP", 0.8), etc.
+    dict(...) convierte esos pares en un diccionario:
+    exchange_rate = {
+       'EUR': 0.93,
+       'GBP': 0.8,
+       'INR': 82.95
+    }
+    """
     exchange_rate = dict(zip(df_exchange['Currency'], df_exchange['Rate']))
-
+    
+    """
+    df['MC_GBP_Billion'] = [np.round(x * float(exchange_rate['GBP']), 2) for x in df['MC_USD_Billion']]
+    for x in df['MC_USD_Billion'] → recorre todos los valores en la columna MC_USD_Billion.
+    x * float(exchange_rate['GBP']) → multiplica cada valor por la tasa de conversión correspondiente.
+    np.round(..., 2) → redondea cada resultado a 2 decimales.
+    [ ... for x in ... ] → list comprehension, que genera la lista de todos los valores convertidos.
+    Finalmente, esa lista se asigna a la nueva columna MC_GBP_Billion.
+    """
+    
     # Create new columns using list comprehension and round to 2 decimals
     df['MC_GBP_Billion'] = [np.round(x * float(exchange_rate['GBP']), 2) for x in df['MC_USD_Billion']]
     df['MC_EUR_Billion'] = [np.round(x * float(exchange_rate['EUR']), 2) for x in df['MC_USD_Billion']]
